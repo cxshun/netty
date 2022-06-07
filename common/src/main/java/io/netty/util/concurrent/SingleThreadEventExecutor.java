@@ -422,7 +422,9 @@ public abstract class SingleThreadEventExecutor extends AbstractScheduledEventEx
         if (task == null) {
             return false;
         }
+        //一直循环执行提交的任务
         for (;;) {
+            //执行之前在SingleThreadEventExecutor添加的task
             safeExecute(task);
             task = pollTaskFrom(taskQueue);
             if (task == null) {
@@ -831,8 +833,10 @@ public abstract class SingleThreadEventExecutor extends AbstractScheduledEventEx
 
     private void execute(Runnable task, boolean immediate) {
         boolean inEventLoop = inEventLoop();
+        //添加到taskQueue中
         addTask(task);
         if (!inEventLoop) {
+            //启动消费线程
             startThread();
             if (isShutdown()) {
                 boolean reject = false;
@@ -992,6 +996,7 @@ public abstract class SingleThreadEventExecutor extends AbstractScheduledEventEx
                 boolean success = false;
                 updateLastExecutionTime();
                 try {
+                    //这里最终会执行NioEventLoop的run方法
                     SingleThreadEventExecutor.this.run();
                     success = true;
                 } catch (Throwable t) {

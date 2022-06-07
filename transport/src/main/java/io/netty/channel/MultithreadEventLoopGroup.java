@@ -83,6 +83,7 @@ public abstract class MultithreadEventLoopGroup extends MultithreadEventExecutor
 
     @Override
     public ChannelFuture register(Channel channel) {
+        //这里的next会选择下一下NioEventLoop进行执行
         return next().register(channel);
     }
 

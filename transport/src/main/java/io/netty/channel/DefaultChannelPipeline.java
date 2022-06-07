@@ -199,10 +199,13 @@ public class DefaultChannelPipeline implements ChannelPipeline {
     public final ChannelPipeline addLast(EventExecutorGroup group, String name, ChannelHandler handler) {
         final AbstractChannelHandlerContext newCtx;
         synchronized (this) {
+            //检查当前的handler是否添加过，是否允许重复添加
+            //如果需要重复添加，则需要增加@sharable注解，否则则需要新增一个Handler实例
             checkMultiplicity(handler);
 
             newCtx = newContext(group, filterName(name, handler), handler);
 
+            //把新的Handler添加到TailContext前
             addLast0(newCtx);
 
             // If the registered is false it means that the channel was not registered on an eventLoop yet.
